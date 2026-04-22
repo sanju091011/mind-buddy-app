@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,11 +7,14 @@ import { MoodTracker } from "./MoodTracker";
 import { ResourceHub } from "./ResourceHub";
 import { BookingForm } from "./BookingForm";
 import { ChatBot } from "./ChatBot";
-import { Calendar, MessageCircle, BookOpen, User, Activity, Phone, Shield } from "lucide-react";
+import { ProfileTab } from "./ProfileTab";
+import { useAuth } from "@/hooks/useAuth";
+import { Calendar, MessageCircle, BookOpen, User, Activity, Phone, Shield, BarChart3 } from "lucide-react";
 import heroImage from "@/assets/hero-wellness.jpg";
 
 export const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const { isAdmin, signOut } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-calm">
@@ -33,7 +37,15 @@ export const Dashboard = () => {
                 <Phone className="h-4 w-4 mr-2" />
                 Crisis: 1800-599-0019
               </Button>
-              <Button variant="calm" size="sm">
+              {isAdmin && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/admin">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Admin
+                  </Link>
+                </Button>
+              )}
+              <Button variant="calm" size="sm" onClick={() => setActiveTab("profile")}>
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </Button>
@@ -217,48 +229,7 @@ export const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="profile">
-            <div className="max-w-2xl mx-auto">
-              <Card className="shadow-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    Your Profile
-                  </CardTitle>
-                  <CardDescription>Manage your personal information and wellness settings</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium">Name</label>
-                      <p className="text-lg">Anita Kumar</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">College</label>
-                      <p className="text-lg">ABC Engineering College</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Preferred Language</label>
-                      <p className="text-lg">Hindi, English</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Wellness Score</label>
-                      <p className="text-lg font-semibold text-primary">85/100</p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-primary-soft p-4 rounded-lg">
-                    <h3 className="font-medium text-primary mb-2">Privacy & Security</h3>
-                    <p className="text-sm text-primary">
-                      Your data is encrypted and confidential. We follow strict healthcare privacy standards.
-                    </p>
-                  </div>
-                  
-                  <Button variant="wellness" className="w-full">
-                    Update Profile
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <ProfileTab />
           </TabsContent>
         </Tabs>
       </main>
