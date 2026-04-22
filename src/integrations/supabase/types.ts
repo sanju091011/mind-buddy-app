@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          counsellor_id: string | null
           counsellor_name: string
           created_at: string
           id: string
@@ -25,6 +26,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          counsellor_id?: string | null
           counsellor_name: string
           created_at?: string
           id?: string
@@ -34,6 +36,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          counsellor_id?: string | null
           counsellor_name?: string
           created_at?: string
           id?: string
@@ -43,6 +46,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      chat_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          is_anonymous: boolean
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender: string
+          session_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender: string
+          session_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mood_entries: {
         Row: {
@@ -154,7 +213,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      struggling_users: {
+        Row: {
+          avg_mood: number | null
+          entry_count: number | null
+          last_entry_at: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
@@ -164,6 +231,9 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_counselor_for: { Args: { _student_id: string }; Returns: boolean }
+      owns_chat_session: { Args: { _session_id: string }; Returns: boolean }
+      weekly_wellness_score: { Args: { _user_id: string }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user" | "counselor"
